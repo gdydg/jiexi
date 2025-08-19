@@ -1,0 +1,55 @@
+name: Resolve domain IPs
+
+on:
+  schedule:
+    # 每天 UTC 18:00 运行一次（北京时间 +08:00 相当于每天 02:00）
+    - cron: "0 18 * * *"
+  workflow_dispatch:
+    inputs:
+      domains:
+        description: "要解析的域名，逗号/空格/换行分隔（可覆盖仓库变量 DOMAINS）"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: pip install --upgrade dnspython
+
+      - name: Run resolver
+        env:
+          # 优先使用手动触发输入；否则用仓库变量（Settings → Secrets and variables → Actions → Variables）
+          DOMAINS: ${{ github.event.inputs.domains || vars.DOMAINS }}
+          # 可选：设置仓库变量 DNS_SERVERS（例如 8.8.8.8,1.1.1.1）
+          DNS_SERVERS: ${{ vars.DNS_SERVERS }}
+        run: python resolve_ips.py
+      - name: Commit & push if changed
+        shell: bash
+        run: |
+          set -e
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add ips.txt output/*.txt 2>/dev/null || true
+            # 若只生成了 ips.txt，也不会报错
+            git commit -m "chore: update resolved IPs [skip ci]"
+            git push
+          else
+            echo "No changes to commit."
+          fi
