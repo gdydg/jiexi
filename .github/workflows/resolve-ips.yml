@@ -1,4 +1,4 @@
-name: Resolve domain IPs
+name: Resolve domain IPs (Pro, dig)
 
 on:
   schedule:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       domains:
-        description: "要解析的域名，逗号/空格/换行分隔（可覆盖仓库变量 DOMAINS）"
+        description: "临时覆盖要解析的域名（逗号/空格/换行分隔）"
         required: false
         default: ""
 
@@ -17,28 +17,159 @@ permissions:
 jobs:
   resolve:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          persist-credentials: true
+      - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.x"
-
-      - name: Install dependencies
-        run: pip install --upgrade dnspython
-
-      - name: Run resolver
+      - name: Resolve via multiple resolvers, ECS & auth NS
         env:
-          # 优先使用手动触发输入；否则用仓库变量（Settings → Secrets and variables → Actions → Variables）
+          # ① 域名列表（必填）：逗号/空格/换行分隔
           DOMAINS: ${{ github.event.inputs.domains || vars.DOMAINS }}
-          # 可选：设置仓库变量 DNS_SERVERS（例如 8.8.8.8,1.1.1.1）
-          DNS_SERVERS: ${{ vars.DNS_SERVERS }}
-        run: python resolve_ips.py
+
+          # ② 解析器列表（可选）：默认多家公共 DNS
+          # 例：8.8.8.8,1.1.1.1,9.9.9.9,208.67.222.222,223.5.5.5,114.114.114.114
+          RESOLVERS: ${{ vars.RESOLVERS }}
+
+          # ③ 采样次数（可选）：对每个解析器重复查询次数，默认 5
+          SAMPLES: ${{ vars.SAMPLES }}
+
+          # ④ 记录类型（可选）：默认 A,AAAA
+          RECORD_TYPES: ${{ vars.RECORD_TYPES }}
+
+          # ⑤ 是否询问权威 NS（可选）：true/false（默认 true）
+          USE_AUTH_NS: ${{ vars.USE_AUTH_NS }}
+
+          # ⑥ ECS 子网（可选）：逗号/空格/换行分隔，例：1.1.1.0/24,8.8.8.0/24,2.56.0.0/16,114.114.114.0/24
+          ECS_SUBNETS: ${{ vars.ECS_SUBNETS }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # ---------- 参数与默认值 ----------
+          domains=$(echo "${DOMAINS:-}" | tr ', ' '\n' | sed '/^$/d' | sort -u)
+          if [[ -z "$domains" ]]; then
+            echo "请在变量 DOMAINS 中设置要解析的域名" >&2
+            exit 1
+          fi
+
+          resolvers=$(echo "${RESOLVERS:-8.8.8.8 1.1.1.1 9.9.9.9 208.67.222.222 223.5.5.5 114.114.114.114}" | tr ',;' ' ')
+          samples=${SAMPLES:-5}
+          record_types=$(echo "${RECORD_TYPES:-A,AAAA}" | tr ', ' '\n' | sed '/^$/d' | sort -u)
+          use_auth_ns=${USE_AUTH_NS:-true}
+          ecs_list=$(echo "${ECS_SUBNETS:-}" | tr ',;' '\n' | sed '/^$/d')
+
+          mkdir -p output
+          TS=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          echo -e "# Generated at $TS\n# Record types: $(paste -sd, <<<\"$(echo \"$record_types\" | tr '\n' ',')\")\n" > ips.txt
+
+          # ---------- 辅助函数 ----------
+          is_ipv4() { [[ "$1" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]]; }
+          is_ipv6() { [[ "$1" =~ : ]]; }
+
+          # dig 封装：支持指定解析器和 ECS 子网
+          dig_short() {
+            local rr="$1" name="$2" server="$3" ecs="$4" extra="$5"
+            if [[ -n "$ecs" ]]; then
+              dig +short "$rr" "$name" @"$server" +time=2 +tries=1 +recurse +subnet="$ecs" $extra 2>/dev/null || true
+            else
+              dig +short "$rr" "$name" @"$server" +time=2 +tries=1 +recurse $extra 2>/dev/null || true
+            fi
+          }
+
+          # 问权威：+norecurse；若返回 CNAME，需要对目标再解析（用公共解析器）
+          dig_auth() {
+            local rr="$1" name="$2" nsip="$3"
+            dig +short "$rr" "$name" @"$nsip" +time=2 +tries=1 +norecurse 2>/dev/null || true
+          }
+
+          resolve_cname_target_public() {
+            local rr="$1" target="$2"
+            # 用第一个公共解析器解析目标的最终地址
+            local first_resolver
+            first_resolver=$(echo "$resolvers" | awk '{print $1}')
+            dig +short "$rr" "$target" @"$first_resolver" +time=2 +tries=1 +recurse 2>/dev/null || true
+          }
+
+          # ---------- 主逻辑 ----------
+          for d in $domains; do
+            per_file="output/${d}.txt"
+            echo "# ${d}" > "$per_file"
+            echo "# Generated at $TS" >> "$per_file"
+
+            tmp=$(mktemp)
+            # 1) 递归解析器，多次采样 + 多解析器 + 可选 ECS
+            for rt in $record_types; do
+              for r in $resolvers; do
+                # 无 ECS 先来一轮
+                for i in $(seq 1 "$samples"); do
+                  dig_short "$rt" "$d" "$r" "" "" || true
+                done
+                # ECS 覆盖（若配置了）
+                if [[ -n "$ecs_list" ]]; then
+                  while IFS= read -r ecs; do
+                    for i in $(seq 1 "$samples"); do
+                      dig_short "$rt" "$d" "$r" "$ecs" "" || true
+                    done
+                  done <<< "$ecs_list"
+                fi
+              done
+            done >> "$tmp"
+
+            # 2) 询问权威 NS（可选）
+            if [[ "$use_auth_ns" == "true" ]]; then
+              # 用第一个公共解析器拿 NS
+              first_resolver=$(echo "$resolvers" | awk '{print $1}')
+              ns_names=$(dig +short NS "$d" @"$first_resolver" +time=2 +tries=1 || true)
+              # 若直接域名没有 NS（比如你传的是主机名），尝试其注册域
+              if [[ -z "$ns_names" ]]; then
+                base_zone=$(echo "$d" | awk -F. '{n=NF; if(n>=2){print $(n-1)"."$n}else{print $0}}')
+                ns_names=$(dig +short NS "$base_zone" @"$first_resolver" +time=2 +tries=1 || true)
+              fi
+
+              if [[ -n "$ns_names" ]]; then
+                while IFS= read -r ns; do
+                  [[ -z "$ns" ]] && continue
+                  # 解析权威 NS 的 A/AAAA
+                  ns_ips=$( (dig +short A "$ns" @"$first_resolver" || true; dig +short AAAA "$ns" @"$first_resolver" || true) | sed '/^$/d' )
+                  # 直接问权威
+                  for nsip in $ns_ips; do
+                    for rt in $record_types; do
+                      dig_auth "$rt" "$d" "$nsip" || true
+                      # 若是 CNAME，继续解析目标
+                      cname=$(dig +short CNAME "$d" @"$nsip" +time=2 +tries=1 +norecurse 2>/dev/null | tail -n1 || true)
+                      if [[ -n "$cname" ]]; then
+                        resolve_cname_target_public "$rt" "$cname" || true
+                      fi
+                    done
+                  done
+                done <<< "$ns_names" >> "$tmp"
+              fi
+            fi
+
+            # 去空、去重并排序（IPv4 在前，IPv6 在后）
+            v4=$(grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' "$tmp" | sort -V -u || true)
+            v6=$(grep -E ':' "$tmp" | sort -u || true)
+            rm -f "$tmp"
+
+            if [[ -n "$v4" || -n "$v6" ]]; then
+              [[ -n "$v4" ]] && echo "$v4" >> "$per_file"
+              [[ -n "$v6" ]] && echo "$v6" >> "$per_file"
+              {
+                echo "$d:"
+                [[ -n "$v4" ]] && echo "$v4"
+                [[ -n "$v6" ]] && echo "$v6"
+                echo
+              } >> ips.txt
+            else
+              echo "# (no records found with current strategy)" >> "$per_file"
+              {
+                echo "$d:"
+                echo "# (no records found with current strategy)"
+                echo
+              } >> ips.txt
+            fi
+
+          done
+
       - name: Commit & push if changed
         shell: bash
         run: |
@@ -47,8 +178,7 @@ jobs:
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add ips.txt output/*.txt 2>/dev/null || true
-            # 若只生成了 ips.txt，也不会报错
-            git commit -m "chore: update resolved IPs [skip ci]"
+            git commit -m "chore: broadened resolved IPs (multi-resolver, ECS, auth NS) [skip ci]"
             git push
           else
             echo "No changes to commit."
