@@ -1,21 +1,16 @@
 # cf.090227.xyz
-# Generated at 2025-09-29T18:17:21Z
-104.26.8.23
-104.26.9.23
-104.26.12.54
-104.26.13.54
+# Generated at 2025-09-30T18:15:59Z
 172.66.44.77
 172.66.47.179
-172.67.68.157
-172.67.73.67
-2606:4700:20::681a:817
-2606:4700:20::681a:917
-2606:4700:20::ac43:4943
 2606:4700:310c::ac42:2c4d
 2606:4700:310c::ac42:2fb3
-2a06:98c1:3103::ac40:9ad3
-2a06:98c1:310d::6812:212d
-;; UDP setup with 2a06:98c1:3103::ac40:9ad3#53(2a06:98c1:3103::ac40:9ad3) for cf.090227.xyz failed: network unreachable.
-;; UDP setup with 2a06:98c1:310d::6812:212d#53(2a06:98c1:310d::6812:212d) for cf.090227.xyz failed: network unreachable.
-;; communications error to 104.18.33.45#53: timed out
-;; communications error to 172.64.154.211#53: timed out
+;; UDP setup with 2606:4700:310c::ac42:2c4d#53(2606:4700:310c::ac42:2c4d) for cf.090227.xyz failed: network unreachable.
+;; UDP setup with 2606:4700:310c::ac42:2fb3#53(2606:4700:310c::ac42:2fb3) for cf.090227.xyz failed: network unreachable.
+;; UDP setup with 2606:4700:50::adf5:3af1#53(2606:4700:50::adf5:3af1) for cf.090227.xyz failed: network unreachable.
+;; UDP setup with 2606:4700:58::adf5:3bf8#53(2606:4700:58::adf5:3bf8) for cf.090227.xyz failed: network unreachable.
+;; UDP setup with 2803:f800:50::6ca2:c0f1#53(2803:f800:50::6ca2:c0f1) for cf.090227.xyz failed: network unreachable.
+;; UDP setup with 2803:f800:50::6ca2:c1f8#53(2803:f800:50::6ca2:c1f8) for cf.090227.xyz failed: network unreachable.
+;; UDP setup with 2a06:98c1:50::ac40:20f1#53(2a06:98c1:50::ac40:20f1) for cf.090227.xyz failed: network unreachable.
+;; UDP setup with 2a06:98c1:50::ac40:21f8#53(2a06:98c1:50::ac40:21f8) for cf.090227.xyz failed: network unreachable.
+;; communications error to 172.66.44.77#53: timed out
+;; communications error to 172.66.47.179#53: timed out
