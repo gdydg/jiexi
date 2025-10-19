@@ -1,9 +1,17 @@
 # cf.090227.xyz
-# Generated at 2025-10-18T18:14:24Z
+# Generated at 2025-10-19T18:14:52Z
+104.18.33.45
+104.18.42.98
+172.64.145.158
+172.64.154.211
 172.66.44.77
 172.66.47.179
 2606:4700:310c::ac42:2c4d
 2606:4700:310c::ac42:2fb3
+2a06:98c1:3101::ac40:919e
+2a06:98c1:3103::ac40:9ad3
+2a06:98c1:3108::6812:2a62
+2a06:98c1:310d::6812:212d
 ;; UDP setup with 2606:4700:310c::ac42:2c4d#53(2606:4700:310c::ac42:2c4d) for cf.090227.xyz failed: network unreachable.
 ;; UDP setup with 2606:4700:310c::ac42:2fb3#53(2606:4700:310c::ac42:2fb3) for cf.090227.xyz failed: network unreachable.
 ;; UDP setup with 2606:4700:50::adf5:3af1#53(2606:4700:50::adf5:3af1) for cf.090227.xyz failed: network unreachable.
