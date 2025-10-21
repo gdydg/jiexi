@@ -1,11 +1,15 @@
-# Generated at 2025-10-20T18:18:05Z
+# Generated at 2025-10-21T18:16:24Z
 # Record types: ""A AAAA","
 
 cf.090227.xyz:
 172.66.44.77
 172.66.47.179
+188.114.96.3
+188.114.97.3
 2606:4700:310c::ac42:2c4d
 2606:4700:310c::ac42:2fb3
+2a06:98c1:3120::3
+2a06:98c1:3121::3
 ;; UDP setup with 2606:4700:310c::ac42:2c4d#53(2606:4700:310c::ac42:2c4d) for cf.090227.xyz failed: network unreachable.
 ;; UDP setup with 2606:4700:310c::ac42:2fb3#53(2606:4700:310c::ac42:2fb3) for cf.090227.xyz failed: network unreachable.
 ;; UDP setup with 2606:4700:50::adf5:3af1#53(2606:4700:50::adf5:3af1) for cf.090227.xyz failed: network unreachable.
