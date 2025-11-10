@@ -1,5 +1,5 @@
 # cf.090227.xyz
-# Generated at 2025-11-09T18:15:22Z
+# Generated at 2025-11-10T18:17:48Z
 172.66.44.77
 172.66.47.179
 188.114.96.3
@@ -18,4 +18,3 @@
 ;; UDP setup with 2a06:98c1:50::ac40:21f8#53(2a06:98c1:50::ac40:21f8) for cf.090227.xyz failed: network unreachable.
 ;; communications error to 172.66.44.77#53: timed out
 ;; communications error to 172.66.47.179#53: timed out
-;; communications error to 9.9.9.9#53: timed out
