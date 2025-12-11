@@ -1,20 +1,23 @@
 # cf.090227.xyz
-# Generated at 2025-12-10T18:20:12Z
-172.66.44.77
-172.66.47.179
-188.114.96.3
-188.114.97.3
-2606:4700:310c::ac42:2c4d
-2606:4700:310c::ac42:2fb3
-2a06:98c1:3120::3
-2a06:98c1:3121::3
-;; UDP setup with 2606:4700:310c::ac42:2c4d#53(2606:4700:310c::ac42:2c4d) for cf.090227.xyz failed: network unreachable.
-;; UDP setup with 2606:4700:310c::ac42:2fb3#53(2606:4700:310c::ac42:2fb3) for cf.090227.xyz failed: network unreachable.
-;; UDP setup with 2606:4700:50::adf5:3af1#53(2606:4700:50::adf5:3af1) for cf.090227.xyz failed: network unreachable.
-;; UDP setup with 2606:4700:58::adf5:3bf8#53(2606:4700:58::adf5:3bf8) for cf.090227.xyz failed: network unreachable.
-;; UDP setup with 2803:f800:50::6ca2:c0f1#53(2803:f800:50::6ca2:c0f1) for cf.090227.xyz failed: network unreachable.
-;; UDP setup with 2803:f800:50::6ca2:c1f8#53(2803:f800:50::6ca2:c1f8) for cf.090227.xyz failed: network unreachable.
-;; UDP setup with 2a06:98c1:50::ac40:20f1#53(2a06:98c1:50::ac40:20f1) for cf.090227.xyz failed: network unreachable.
-;; UDP setup with 2a06:98c1:50::ac40:21f8#53(2a06:98c1:50::ac40:21f8) for cf.090227.xyz failed: network unreachable.
-;; communications error to 172.66.44.77#53: timed out
-;; communications error to 172.66.47.179#53: timed out
+# Generated at 2025-12-11T18:18:28Z
+104.18.35.15
+104.18.42.98
+104.18.43.174
+172.64.144.82
+172.64.145.158
+172.64.152.241
+2606:4700:4407::ac40:9052
+2606:4700:440a::ac40:98f1
+2a06:98c1:3101::ac40:919e
+2a06:98c1:3105::6812:230f
+2a06:98c1:3108::6812:2a62
+2a06:98c1:310d::6812:2bae
+;; UDP setup with 2606:4700:4407::ac40:9052#53(2606:4700:4407::ac40:9052) for cf.090227.xyz failed: network unreachable.
+;; UDP setup with 2a06:98c1:3101::ac40:919e#53(2a06:98c1:3101::ac40:919e) for cf.090227.xyz failed: network unreachable.
+;; UDP setup with 2a06:98c1:3108::6812:2a62#53(2a06:98c1:3108::6812:2a62) for cf.090227.xyz failed: network unreachable.
+;; UDP setup with 2a06:98c1:310d::6812:2bae#53(2a06:98c1:310d::6812:2bae) for cf.090227.xyz failed: network unreachable.
+;; communications error to 104.18.42.98#53: timed out
+;; communications error to 104.18.43.174#53: timed out
+;; communications error to 172.64.144.82#53: timed out
+;; communications error to 172.64.145.158#53: timed out
+;; communications error to 208.67.222.222#53: timed out
