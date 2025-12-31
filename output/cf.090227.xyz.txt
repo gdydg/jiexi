@@ -1,5 +1,5 @@
 # cf.090227.xyz
-# Generated at 2025-12-30T18:19:41Z
+# Generated at 2025-12-31T18:18:48Z
 104.18.35.15
 104.18.42.98
 104.18.43.174
@@ -21,4 +21,3 @@
 ;; communications error to 172.64.144.82#53: timed out
 ;; communications error to 172.64.152.241#53: timed out
 ;; communications error to 208.67.222.222#53: timed out
-;; communications error to 9.9.9.9#53: timed out

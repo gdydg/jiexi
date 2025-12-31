@@ -1,4 +1,4 @@
-# Generated at 2025-12-30T18:19:41Z
+# Generated at 2025-12-31T18:18:48Z
 # Record types: ""A AAAA","
 
 cf.090227.xyz:
@@ -23,5 +23,4 @@ cf.090227.xyz:
 ;; communications error to 172.64.144.82#53: timed out
 ;; communications error to 172.64.152.241#53: timed out
 ;; communications error to 208.67.222.222#53: timed out
-;; communications error to 9.9.9.9#53: timed out
 
