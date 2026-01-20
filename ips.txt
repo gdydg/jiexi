@@ -1,4 +1,4 @@
-# Generated at 2026-01-19T18:20:08Z
+# Generated at 2026-01-20T18:23:40Z
 # Record types: ""A AAAA","
 
 cf.090227.xyz:
@@ -15,12 +15,11 @@ cf.090227.xyz:
 2a06:98c1:3108::6812:2a62
 2a06:98c1:310d::6812:2bae
 ;; UDP setup with 2606:4700:4407::ac40:9052#53(2606:4700:4407::ac40:9052) for cf.090227.xyz failed: network unreachable.
-;; UDP setup with 2606:4700:440a::ac40:98f1#53(2606:4700:440a::ac40:98f1) for cf.090227.xyz failed: network unreachable.
-;; UDP setup with 2a06:98c1:3105::6812:230f#53(2a06:98c1:3105::6812:230f) for cf.090227.xyz failed: network unreachable.
+;; UDP setup with 2a06:98c1:3101::ac40:919e#53(2a06:98c1:3101::ac40:919e) for cf.090227.xyz failed: network unreachable.
+;; UDP setup with 2a06:98c1:3108::6812:2a62#53(2a06:98c1:3108::6812:2a62) for cf.090227.xyz failed: network unreachable.
 ;; UDP setup with 2a06:98c1:310d::6812:2bae#53(2a06:98c1:310d::6812:2bae) for cf.090227.xyz failed: network unreachable.
-;; communications error to 104.18.35.15#53: timed out
+;; communications error to 104.18.42.98#53: timed out
 ;; communications error to 104.18.43.174#53: timed out
 ;; communications error to 172.64.144.82#53: timed out
-;; communications error to 172.64.152.241#53: timed out
-;; communications error to 208.67.222.222#53: timed out
+;; communications error to 172.64.145.158#53: timed out
 
